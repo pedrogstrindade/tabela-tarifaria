@@ -1,11 +1,9 @@
 package br.com.tabela_tarifaria_api.dto;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.tabela_tarifaria_api.constants.Categoria;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,14 +13,16 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CalculoResponseDTO {
-    
-    private Categoria categoria;
+public class DetalhamentoDTO {
 
-    private Integer consumoTotal;
+    private FaixaDTO faixa;
+
+    private Integer m3Cobrados;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "0.00")
-    private BigDecimal valorTotal;
+    private BigDecimal valorUnitario;
 
-    private List<DetalhamentoDTO> detalhamento;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "0.00")
+    private BigDecimal subtotal;
+
 }
