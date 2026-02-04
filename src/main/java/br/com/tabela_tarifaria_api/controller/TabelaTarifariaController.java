@@ -1,6 +1,8 @@
 package br.com.tabela_tarifaria_api.controller;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.tabela_tarifaria_api.dto.TabelaTarifariaDTO;
+import br.com.tabela_tarifaria_api.model.TabelaTarifaria;
 import br.com.tabela_tarifaria_api.service.TabelaTarifariaService;
 import jakarta.validation.Valid;
 
@@ -36,6 +39,12 @@ public class TabelaTarifariaController {
  
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deletarTabelaTarifaria(@Valid @PathVariable Long id) {
+        TabelaTarifaria tabelaTarifaria = tabelaTarifariaService.buscarTabelaPeloId(id);
+        
+        if (Objects.isNull(tabelaTarifaria)) {
+            return ResponseEntity.notFound().build();
+        }
+
         tabelaTarifariaService.deletarTabelaTarifaria(id);
         return ResponseEntity.noContent().build();
     }

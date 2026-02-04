@@ -2,13 +2,14 @@ CREATE SCHEMA IF NOT EXISTS tabela_tarifaria_api;
 
 SET search_path TO tabela_tarifaria_api;
 
-CREATE TABLE IF NOT EXISTS tabela_tarifaria (
+CREATE TABLE tabela_tarifaria (
     id_tabela BIGSERIAL PRIMARY KEY,
     nome_tabela VARCHAR(255) NOT NULL,
-    data_vigencia DATE NOT NULL
+    data_vigencia DATE NOT NULL,
+    CONSTRAINT uk_tabela_nome_data UNIQUE (nome_tabela, data_vigencia)
 );
 
-CREATE TABLE IF NOT EXISTS categoria_relacao (
+CREATE TABLE categoria_relacao (
     id_categoria_relacao BIGSERIAL PRIMARY KEY,
     categoria VARCHAR(50) NOT NULL,
     id_tabela BIGINT NOT NULL,
@@ -18,7 +19,7 @@ CREATE TABLE IF NOT EXISTS categoria_relacao (
         ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS faixa_consumo (
+CREATE TABLE faixa_consumo (
     faixa_id BIGSERIAL PRIMARY KEY,
     inicio_faixa INTEGER NOT NULL,
     fim_faixa INTEGER NOT NULL,

@@ -9,4 +9,5 @@ import br.com.tabela_tarifaria_api.model.TabelaTarifaria;
 
 public interface TabelaTarifariaRepository extends JpaRepository<TabelaTarifaria, Long> {
     Optional<TabelaTarifaria> findFirstByDataVigenciaLessThanEqualOrderByDataVigenciaDesc(LocalDate data);
+    boolean existsByNomeTabelaTarifariaAndDataVigencia(String nomeTabelaTarifaria, LocalDate dataVigencia);
 }

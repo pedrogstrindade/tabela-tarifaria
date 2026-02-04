@@ -3,6 +3,7 @@ package br.com.tabela_tarifaria_api.service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,8 +29,9 @@ public class TabelaTarifariaService {
 
     public void validarTabela(TabelaTarifariaDTO dto) {
         Categoria[] categoriasObrigatorias = Categoria.values();
-        Set<Categoria> categoriasRecebidas = dto.getCategorias().stream().map(CategoriaRelacaoDTO::getCategoria).collect(Collectors.toSet());
-        
+        Set<Categoria> categoriasRecebidas = dto.getCategorias().stream().map(CategoriaRelacaoDTO::getCategoria)
+                .collect(Collectors.toSet());
+
         if (categoriasRecebidas.size() != dto.getCategorias().size()) {
             throw new RuntimeException("Categorias duplicadas ou inexistentes!");
         }
@@ -41,10 +43,14 @@ public class TabelaTarifariaService {
         }
 
     }
-    
+
     public TabelaTarifariaDTO criarTabelaTarifaria(TabelaTarifariaDTO dto) {
+        if (tabelaTarifariaRepository.existsByNomeTabelaTarifariaAndDataVigencia(dto.getNomeTabelaTarifaria(),
+                dto.getDataVigencia())) {
+            throw new RuntimeException("Já existe uma tabela cadastrada para este período.");
+        }
+
         validarTabela(dto);
-        
         TabelaTarifaria tabelaTarifaria = new TabelaTarifaria();
         tabelaTarifaria.setNomeTabelaTarifaria(dto.getNomeTabelaTarifaria());
         tabelaTarifaria.setDataVigencia(dto.getDataVigencia());
@@ -81,6 +87,15 @@ public class TabelaTarifariaService {
         return listaDTO;
     }
 
+    public TabelaTarifaria buscarTabelaPeloId(Long id) {
+        Optional<TabelaTarifaria> tabelaTarifaria = tabelaTarifariaRepository.findById(id);
+        if (tabelaTarifaria.isPresent()) {
+            return tabelaTarifaria.get();
+        }
+
+        return null;
+    }
+    
     public void deletarTabelaTarifaria(Long id) {
         tabelaTarifariaRepository.deleteById(id);
     }
