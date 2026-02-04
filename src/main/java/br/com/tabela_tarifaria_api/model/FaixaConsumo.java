@@ -21,7 +21,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "FAIXA_CONSUMO")
+@Table(name = "FAIXA_CONSUMO", schema = "tabela_tarifaria_api")
 public class FaixaConsumo {
 
     @Id

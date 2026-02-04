@@ -24,7 +24,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "TABELA_TARIFARIA")
+@Table(name = "TABELA_TARIFARIA", schema = "tabela_tarifaria_api")
 public class TabelaTarifaria {
 
     @Id
