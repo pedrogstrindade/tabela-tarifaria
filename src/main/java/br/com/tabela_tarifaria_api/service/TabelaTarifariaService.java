@@ -28,11 +28,12 @@ public class TabelaTarifariaService {
     private TabelaTarifariaRepository tabelaTarifariaRepository;
 
     public void validarTabela(TabelaTarifariaDTO dto) {
+        // validar as categorias
         Categoria[] categoriasObrigatorias = Categoria.values();
-        Set<Categoria> categoriasRecebidas = dto.getCategorias().stream().map(CategoriaRelacaoDTO::getCategoria)
+        Set<Categoria> categoriasRecebidas = dto.getCategoriasRelacao().stream().map(CategoriaRelacaoDTO::getCategoria)
                 .collect(Collectors.toSet());
 
-        if (categoriasRecebidas.size() != dto.getCategorias().size()) {
+        if (categoriasRecebidas.size() != dto.getCategoriasRelacao().size()) {
             throw new RuntimeException("Categorias duplicadas ou inexistentes!");
         }
 
@@ -42,20 +43,53 @@ public class TabelaTarifariaService {
             }
         }
 
+        // validar as faixas de consumo
+        List<CategoriaRelacaoDTO> categoriasRelacao = dto.getCategoriasRelacao();
+        for (CategoriaRelacaoDTO categoriaDTO : categoriasRelacao) {
+            List<FaixaConsumoDTO> faixas = categoriaDTO.getFaixasConsumo();
+            faixas.sort(Comparator.comparing(FaixaConsumoDTO::getInicio));
+
+            if (faixas.get(0).getInicio() != 0) {
+                throw new RuntimeException("A categoria deve começar com a faixa no 0!");
+            }
+
+            Integer faixaFimAnterior = -1;
+            for (FaixaConsumoDTO faixa : faixas) {
+                if (faixa.getInicio() >= faixa.getFim()) {
+                    throw new RuntimeException(
+                            "O início deve ser menor que o fim na categoria: " + categoriaDTO.getCategoria());
+                }
+
+                if (faixaFimAnterior != -1 && faixa.getInicio() <= faixaFimAnterior) {
+                    throw new RuntimeException("Sobreposição de faixas na categoria: " + categoriaDTO.getCategoria());
+                }
+
+                if (faixa.getInicio() != faixaFimAnterior + 1) {
+                    throw new RuntimeException("As faixas devem cobrir todos consumos possíveis! Gap encontrado em: " + categoriaDTO.getCategoria() + " (" + faixaFimAnterior + ")");
+                }
+                faixaFimAnterior = faixa.getFim();
+            }
+
+            if (faixaFimAnterior < 99999) {
+                throw new RuntimeException("A última faixa deve cobrir o máximo de consumo! (min. 99999)");
+
+            }
+
+            if (tabelaTarifariaRepository.existsByNomeTabelaTarifariaAndDataVigencia(dto.getNomeTabelaTarifaria(),
+                    dto.getDataVigencia())) {
+                throw new RuntimeException("Já existe uma tabela cadastrada para este período.");
+            }
+        }
     }
 
     public TabelaTarifariaDTO criarTabelaTarifaria(TabelaTarifariaDTO dto) {
-        if (tabelaTarifariaRepository.existsByNomeTabelaTarifariaAndDataVigencia(dto.getNomeTabelaTarifaria(),
-                dto.getDataVigencia())) {
-            throw new RuntimeException("Já existe uma tabela cadastrada para este período.");
-        }
 
         validarTabela(dto);
         TabelaTarifaria tabelaTarifaria = new TabelaTarifaria();
         tabelaTarifaria.setNomeTabelaTarifaria(dto.getNomeTabelaTarifaria());
         tabelaTarifaria.setDataVigencia(dto.getDataVigencia());
 
-        for (CategoriaRelacaoDTO categoriaDTO : dto.getCategorias()) {
+        for (CategoriaRelacaoDTO categoriaDTO : dto.getCategoriasRelacao()) {
             CategoriaRelacao categoriaRelacao = new CategoriaRelacao();
             categoriaRelacao.setCategoria(categoriaDTO.getCategoria());
             categoriaRelacao.setTabelaTarifaria(tabelaTarifaria);
@@ -95,7 +129,7 @@ public class TabelaTarifariaService {
 
         return null;
     }
-    
+
     public void deletarTabelaTarifaria(Long id) {
         tabelaTarifariaRepository.deleteById(id);
     }
@@ -104,7 +138,7 @@ public class TabelaTarifariaService {
         TabelaTarifariaDTO dto = new TabelaTarifariaDTO();
         dto.setNomeTabelaTarifaria(tabela.getNomeTabelaTarifaria());
         dto.setDataVigencia(tabela.getDataVigencia());
-        dto.setCategorias(tabela.getCategoriasRelacao().stream()
+        dto.setCategoriasRelacao(tabela.getCategoriasRelacao().stream()
                 .map(relacao -> {
                     CategoriaRelacaoDTO categoriaDTO = new CategoriaRelacaoDTO();
                     categoriaDTO.setCategoria(relacao.getCategoria());

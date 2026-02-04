@@ -21,5 +21,5 @@ public class TabelaTarifariaDTO {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dataVigencia;
     
-    private List<CategoriaRelacaoDTO> categorias;
+    private List<CategoriaRelacaoDTO> categoriasRelacao;
 }
