@@ -161,7 +161,7 @@ Payload Completo (4 Categorias):
 <summary>Request</summary>
     
 ```
-      [
+      
         {
           "nomeTabelaTarifaria": "Tabela Progressiva Estadual - Edição Fevereiro 2026",
           "dataVigencia": "03/02/2026",
