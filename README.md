@@ -9,6 +9,8 @@
 - Versionamento de schema com Flyway
 - Documentação interativa com Swagger UI
 
+⚠️ `A API não possui endpoint de Update para garantir a integridade histórica das cobranças. Novas tarifas devem ser inseridas como novas tabelas com novas datas de vigência.`
+
 ## 🖥️ Tecnologias Principais (core)
 - Java 21
 - Spring Boot 4.0.2
@@ -742,7 +744,7 @@ Endpoint: /api/calculos
 ```
 </details>
 <details>
-<summary>Response</summary>
+<summary>Response (200 Ok)</summary>
 
 ```
 {
