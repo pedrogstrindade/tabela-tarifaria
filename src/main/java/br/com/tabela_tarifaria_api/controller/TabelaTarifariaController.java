@@ -37,7 +37,7 @@ public class TabelaTarifariaController {
     }
  
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deletarTabelaTarifaria(@Valid @PathVariable Long id) {
+    public ResponseEntity<Void> deletarTabelaTarifaria(@PathVariable Long id) {
         TabelaTarifaria tabelaTarifaria = tabelaTarifariaService.buscarTabelaPeloId(id);
         
         if (Objects.isNull(tabelaTarifaria)) {
